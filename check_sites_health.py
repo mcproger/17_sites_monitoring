@@ -1,5 +1,14 @@
 import requests
 import os
+import argparse
+
+
+def get_argparser():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        'path', type=str, help='Path to file with urls for checking')
+    args = parser.parse_args()
+    return args
 
 
 def load_urls4check(path):
@@ -11,7 +20,8 @@ def load_urls4check(path):
 
 
 def is_server_respond_with_200(url):
-    pass
+    response = requests.get(url)
+    return response.status_code == 200
 
 
 def get_domain_expiration_date(domain_name):
@@ -19,4 +29,7 @@ def get_domain_expiration_date(domain_name):
 
 
 if __name__ == '__main__':
-    pass
+    args = get_argparser()
+    urls_for_check = load_urls4check(args.path).split()
+    for url in urls_for_check:
+        print(is_server_respond_with_200(url))
