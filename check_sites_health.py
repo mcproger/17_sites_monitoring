@@ -1,6 +1,8 @@
 import requests
 import os
 import argparse
+import whois
+from datetime import datetime
 
 
 def get_argparser():
@@ -25,11 +27,20 @@ def is_server_respond_with_200(url):
 
 
 def get_domain_expiration_date(domain_name):
-    pass
+    domain = whois.whois(domain_name)
+    domain_expiration_timedelta = domain.expiration_date[0] - datetime.now()
+    return domain_expiration_timedelta.days >= 30
+
+
+def get_site_status(url):
+    if is_server_respond_with_200(url) and get_domain_expiration_date(url):
+        site_status = '{url} - {status_code}; {domain_expiration_date}'.format(
+            url=url, status_code='status code is 200', domain_expiration_date='domain expiration date 1 month or more')
+        return site_status
 
 
 if __name__ == '__main__':
     args = get_argparser()
     urls_for_check = load_urls4check(args.path).split()
     for url in urls_for_check:
-        print(is_server_respond_with_200(url))
+        print(get_site_status(url))
