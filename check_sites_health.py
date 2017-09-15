@@ -5,7 +5,7 @@ import whois
 from datetime import datetime
 
 
-def get_argparser():
+def get_console_arguments():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         'path', type=str, help='Path to file with urls for checking')
@@ -26,21 +26,28 @@ def is_server_respond_with_200(url):
     return response.status_code == 200
 
 
-def get_domain_expiration_date(domain_name):
+def is_domain_expiration_date_valid(domain_name):
     domain = whois.whois(domain_name)
-    domain_expiration_timedelta = domain.expiration_date[0] - datetime.now()
+    if type(domain.expiration_date) == list:
+        domain_expiration_date = domain.expiration_date[0]
+    else:
+        domain_expiration_date = domain.expiration_date
+    domain_expiration_timedelta = domain_expiration_date - datetime.now()
     return domain_expiration_timedelta.days >= 30
 
 
 def get_site_status(url):
-    if is_server_respond_with_200(url) and get_domain_expiration_date(url):
-        site_status = '{url} - {status_code}; {domain_expiration_date}'.format(
-            url=url, status_code='status code is 200', domain_expiration_date='domain expiration date 1 month or more')
+    if is_server_respond_with_200(url) and is_domain_expiration_date_valid(url):
+        site_status = '{0} - {1}, {2}'.format(
+            url,
+            'status code is 200',
+            'domain expiration date 1 month or more',
+        )
         return site_status
 
 
 if __name__ == '__main__':
-    args = get_argparser()
+    args = get_console_arguments()
     urls_for_check = load_urls4check(args.path).split()
     for url in urls_for_check:
         print(get_site_status(url))
