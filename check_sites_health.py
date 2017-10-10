@@ -23,17 +23,18 @@ def load_urls4check(path):
 
 def is_server_respond_with_200(url):
     response = requests.get(url)
-    return response.status_code == 200
+    return response.ok
 
 
 def is_domain_expiration_date_valid(domain_name):
+    days_in_month = 30
     domain = whois.whois(domain_name)
     if type(domain.expiration_date) == list:
         domain_expiration_date = domain.expiration_date[0]
     else:
         domain_expiration_date = domain.expiration_date
     domain_expiration_timedelta = domain_expiration_date - datetime.now()
-    return domain_expiration_timedelta.days >= 30
+    return domain_expiration_timedelta.days >= days_in_month
 
 
 def get_site_status(url):
