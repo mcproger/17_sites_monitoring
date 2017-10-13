@@ -26,8 +26,7 @@ def is_server_respond_with_200(url):
     return response.ok
 
 
-def is_domain_expiration_date_valid(domain_name):
-    days_in_month = 30
+def is_domain_expiration_date_valid(domain_name, days_in_month):
     domain = whois.whois(domain_name)
     if type(domain.expiration_date) == list:
         domain_expiration_date = domain.expiration_date[0]
@@ -37,18 +36,19 @@ def is_domain_expiration_date_valid(domain_name):
     return domain_expiration_timedelta.days >= days_in_month
 
 
-def get_site_status(url):
-    if is_server_respond_with_200(url) and is_domain_expiration_date_valid(url):
-        site_status = '{0} - {1}, {2}'.format(
-            url,
-            'status code is 200',
-            'domain expiration date 1 month or more',
-        )
-        return site_status
+def format_site_status_output(url):
+    site_status_output = '{0} - {1}, {2}'.format(
+        url,
+        'status code is 200',
+        'domain expiration date 1 month or more',
+    )
+    return site_status_output
 
 
 if __name__ == '__main__':
     args = get_console_arguments()
     urls_for_check = load_urls4check(args.path).split()
+    days_in_month = 30
     for url in urls_for_check:
-        print(get_site_status(url))
+        if is_server_respond_with_200(url) and is_domain_expiration_date_valid(url, days_in_month):
+            print(format_site_status_output(url))
