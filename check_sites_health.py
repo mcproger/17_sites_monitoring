@@ -28,7 +28,7 @@ def is_server_respond_with_200(url):
 
 def is_domain_expiration_date_valid(domain_name, days_in_month):
     domain = whois.whois(domain_name)
-    if type(domain.expiration_date) == list:
+    if isinstance(domain.expiration_date, list):
         domain_expiration_date = domain.expiration_date[0]
     else:
         domain_expiration_date = domain.expiration_date
