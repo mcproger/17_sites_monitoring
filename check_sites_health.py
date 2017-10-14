@@ -52,3 +52,5 @@ if __name__ == '__main__':
     for url in urls_for_check:
         if is_server_respond_with_200(url) and is_domain_expiration_date_valid(url, days_in_month):
             print(format_site_status_output(url))
+        else:
+            print('Some troubles with %s. Please check it.' % url)
